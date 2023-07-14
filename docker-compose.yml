@@ -1,0 +1,34 @@
+version : "3.1"
+
+services:
+      els:
+        container_name: els-test
+        image: elasticsearch:8.8.0
+        ports:
+            - 9200:9200
+        volumes:   
+            - elk-data:/usr/share/elasticsearch/data
+        environment:
+            - xpack.security.enabled=false
+            - discovery.type=single-node
+        networks:
+            - elsknet
+      kibana:
+        container_name: kibana-test
+        image: kibana:8.8.0
+        ports:
+            - 5601:5601
+        depends_on:
+            - els
+        environment:
+            - ELASTICSEARCH_URL=http://localhost:9200
+        networks:
+            - elsknet
+networks:
+  elsknet:
+    driver: bridge
+
+volumes:
+   elk-data:
+    external: true
+       
